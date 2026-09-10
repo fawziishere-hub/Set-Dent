@@ -1,0 +1,130 @@
+import { useEffect, useState } from "react";
+import { motion } from "framer-motion";
+import { useNavigate } from "react-router-dom";
+import { supabase } from "../supabaseClient";
+import { CalendarDays, ArrowRight, CheckCircle2 } from "lucide-react";
+
+const TedavilerPage = () => {
+  const [categories, setCategories] = useState([]);
+  const [services, setServices] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const { data: catData } = await supabase.from("service_categories").select("*");
+        const { data: servData } = await supabase.from("services").select("*");
+
+        if (catData) setCategories(catData);
+        if (servData) setServices(servData);
+      } catch (error) {
+        console.error("Error fetching data:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchData();
+  }, []);
+
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-white">
+        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-600"></div>
+      </div>
+    );
+  }
+
+  return (
+    <main className="min-h-screen bg-white pt-24 pb-20">
+      {/* HERO SECTION */}
+      <section className="relative bg-slate-50 py-20 border-b border-slate-100">
+        <div className="mx-auto max-w-7xl px-5 text-center sm:px-8 lg:px-10">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="max-w-3xl mx-auto"
+          >
+            <p className="text-sm font-bold uppercase tracking-[.2em] text-blue-600">Kapsamlı Hizmetler</p>
+            <h1 className="mt-4 text-4xl font-black text-slate-900 sm:text-6xl tracking-tight">
+              Sağlıklı Gülüşler İçin <br/>
+              <span className="text-blue-600">Uzman Tedaviler</span>
+            </h1>
+            <p className="mt-6 text-lg leading-8 text-slate-600">
+              Sim Dent olarak, en modern teknolojileri ve uzman hekim kadromuzla size en uygun tedavi yöntemlerini sunuyoruz.
+            </p>
+          </motion.div>
+        </div>
+      </section>
+
+      {/* SERVICES SECTION */}
+      <section className="mx-auto max-w-7xl px-5 py-20 sm:px-8 lg:px-10">
+        <div className="space-y-24">
+          {categories.map((category) => {
+            const categoryServices = services.filter(s => s.category_id === category.id);
+
+            return (
+              <div key={category.id} className="space-y-10">
+                <div className="flex flex-col md:flex-row md:items-end justify-between gap-4 border-b border-slate-100 pb-6">
+                  <div>
+                    <h2 className="text-3xl font-black text-slate-900 sm:text-4xl">{category.name}</h2>
+                    <p className="mt-3 text-lg text-slate-600 max-w-2xl">{category.description}</p>
+                  </div>
+                  <div className="hidden md:block h-1 w-24 bg-blue-600 rounded-full mb-2"></div>
+                </div>
+
+                <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-3">
+                  {categoryServices.map((service) => (
+                    <motion.div
+                      key={service.id}
+                      whileHover={{ y: -5 }}
+                      className="group rounded-3xl border border-slate-200 bg-white p-8 transition-all hover:border-blue-600 hover:shadow-xl"
+                    >
+                      <div className="relative h-48 w-full overflow-hidden rounded-2xl mb-6">
+                        <img
+                          src={service.image_url || "/images/clinic-placeholder.jpg"}
+                          alt={service.name}
+                          className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-110"
+                        />
+                        <div className="absolute top-4 right-4 bg-white/90 backdrop-blur-sm px-3 py-1 rounded-full text-xs font-bold text-blue-600 shadow-sm">
+                          {service.duration} Dakika
+                        </div>
+                      </div>
+                      <h3 className="text-xl font-bold text-slate-900 group-hover:text-blue-600 transition-colors">{service.name}</h3>
+                      <p className="mt-3 leading-7 text-slate-600">{service.description}</p>
+
+                      <button
+                        onClick={() => navigate("/randevu")}
+                        className="mt-6 flex items-center gap-2 text-sm font-bold text-blue-600 hover:text-blue-700 transition-colors"
+                      >
+                        Randevu Al <ArrowRight size={16} />
+                      </button>
+                    </motion.div>
+                  ))}
+                </div>
+              </div>
+            );
+          })}
+        </div>
+      </section>
+
+      {/* CTA SECTION */}
+      <section className="mx-auto max-w-7xl px-5 py-20 sm:px-8 lg:px-10">
+        <div className="rounded-3xl bg-blue-600 p-8 md:p-16 text-center text-white shadow-2xl">
+          <h2 className="text-3xl font-black sm:text-4xl">Hangi Tedavi Sizin İçin Uygun?</h2>
+          <p className="mt-4 text-lg text-blue-100 max-w-2xl mx-auto">
+            Kararsızsanız, uzman hekimlerimizle yapacağınız bir ön muayene ile size en uygun tedavi planını oluşturabiliriz.
+          </p>
+          <button
+            onClick={() => navigate("/randevu")}
+            className="mt-8 inline-flex items-center gap-2 rounded-xl bg-white px-8 py-4 font-bold text-blue-600 shadow-lg transition hover:bg-blue-50"
+          >
+            <CalendarDays size={20} /> Hemen Randevu Alın
+          </button>
+        </div>
+      </section>
+    </main>
+  );
+};
+
+export default TedavilerPage;

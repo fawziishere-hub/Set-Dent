@@ -113,24 +113,38 @@ const Navbar = () => {
                           initial={{ opacity: 0, y: 10 }}
                           animate={{ opacity: 1, y: 0 }}
                           exit={{ opacity: 0, y: 10 }}
-                          className="absolute top-full left-1/2 -translate-x-1/2 w-[500px] bg-white shadow-2xl rounded-3xl border border-slate-100 p-6 grid grid-cols-1 gap-4 mt-2 z-50"
+                          className="absolute top-full left-1/2 -translate-x-1/2 w-[600px] bg-white shadow-2xl rounded-3xl border border-slate-100 p-8 grid grid-cols-2 gap-6 mt-4 z-50"
                         >
-                          <div className="grid grid-cols-1 gap-4">
+                          <div className="col-span-2 mb-2">
+                            <h3 className="text-lg font-black text-slate-900">Tedavi Hizmetlerimiz</h3>
+                            <p className="text-sm text-slate-500">Size en uygun tedavi yöntemini keşfedin</p>
+                          </div>
+                          <div className="grid grid-cols-1 gap-3">
                             {categories.map((cat) => (
                               <Link
                                 key={cat.id}
                                 to={`/tedaviler?category=${cat.id}`}
                                 className="group flex items-center gap-4 p-3 rounded-2xl hover:bg-blue-50 transition-all"
                               >
-                                <div className="h-12 w-12 rounded-xl bg-blue-100 text-blue-600 flex items-center justify-center font-bold">
+                                <div className="h-10 w-10 rounded-xl bg-blue-100 text-blue-600 flex items-center justify-center font-bold group-hover:bg-blue-600 group-hover:text-white transition-colors">
                                   {cat.name[0]}
                                 </div>
-                                <div>
+                                <div className="flex-1">
                                   <p className="font-bold text-slate-900 group-hover:text-blue-600 transition-colors">{cat.name}</p>
                                   <p className="text-xs text-slate-500 line-clamp-1">{cat.description}</p>
                                 </div>
                               </Link>
                             ))}
+                          </div>
+                          <div className="bg-slate-50 rounded-2xl p-6 flex flex-col justify-center text-center">
+                            <p className="font-bold text-slate-900 mb-2">Hangi Tedavi Uygun?</p>
+                            <p className="text-xs text-slate-500 mb-4">Uzmanlarımız size en doğru yolu göstermek için burada.</p>
+                            <Link
+                              to="/randevu"
+                              className="px-4 py-2 bg-blue-600 text-white text-xs rounded-full font-bold hover:bg-blue-700 transition-all"
+                            >
+                              Ücretsiz Danışın
+                            </Link>
                           </div>
                         </motion.div>
                       )}

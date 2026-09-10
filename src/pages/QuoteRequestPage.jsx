@@ -62,6 +62,7 @@ export default function QuoteRequestPage() {
     name: "",
     email: "",
     phone: "",
+    notes: "", // Added notes state
     verificationCode: "",
   });
 
@@ -121,6 +122,7 @@ export default function QuoteRequestPage() {
         verification_code: code,
         status: "pending",
         appointment_type: formData.userType,
+        notes: formData.notes, // Sending notes to DB
       }]);
 
       if (error) throw error;
@@ -159,7 +161,7 @@ export default function QuoteRequestPage() {
   };
 
   return (
-    <main className="min-h-screen bg-white pt-20 flex items-center justify-center px-5">
+    <main className="min-h-screen bg-white pt-20 flex items-center justify-center px-5 mb-10">
       <AnimatePresence mode="wait">
 
         {/* STEP: WELCOME */}
@@ -179,7 +181,7 @@ export default function QuoteRequestPage() {
                 initial={{ width: 0 }}
                 animate={{ width: "100%" }}
                 transition={{ duration: 2.5 }}
-                className="h-full bg-blue-600"
+                className="h-full bg-[#a88157]"
               />
             </div>
           </motion.div>
@@ -198,9 +200,9 @@ export default function QuoteRequestPage() {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <button
                 onClick={() => { setFormData(prev => ({ ...prev, userType: 'new' })); handleNext(STEPS.SERVICE); }}
-                className="p-8 rounded-3xl border-2 border-slate-100 hover:border-blue-600 bg-white transition-all group text-left"
+                className="p-8 rounded-3xl border-2 border-slate-100 hover:border-[#a88157] bg-white transition-all group text-left"
               >
-                <div className="h-14 w-14 rounded-2xl bg-blue-50 text-blue-600 flex items-center justify-center mb-6 group-hover:bg-blue-600 group-hover:text-white transition-colors">
+                <div className="h-14 w-14 rounded-2xl bg-amber-50 text-[#a88157] flex items-center justify-center mb-6 group-hover:bg-[#a88157] group-hover:text-white transition-colors">
                   <UserPlus size={28} />
                 </div>
                 <h3 className="text-xl font-bold text-slate-900">Yeni Hasta</h3>
@@ -208,9 +210,9 @@ export default function QuoteRequestPage() {
               </button>
               <button
                 onClick={() => { setFormData(prev => ({ ...prev, userType: 'registered' })); handleNext(STEPS.SERVICE); }}
-                className="p-8 rounded-3xl border-2 border-slate-100 hover:border-blue-600 bg-white transition-all group text-left"
+                className="p-8 rounded-3xl border-2 border-slate-100 hover:border-[#a88157] bg-white transition-all group text-left"
               >
-                <div className="h-14 w-14 rounded-2xl bg-blue-50 text-blue-600 flex items-center justify-center mb-6 group-hover:bg-blue-600 group-hover:text-white transition-colors">
+                <div className="h-14 w-14 rounded-2xl bg-amber-50 text-[#a88157] flex items-center justify-center mb-6 group-hover:bg-[#a88157] group-hover:text-white transition-colors">
                   <User size={28} />
                 </div>
                 <h3 className="text-xl font-bold text-slate-900">Kayıtlı Hasta</h3>
@@ -229,7 +231,7 @@ export default function QuoteRequestPage() {
             exit={{ opacity: 0, x: -20 }}
             className="max-w-4xl w-full"
           >
-            <button onClick={() => handleBack(STEPS.USER_TYPE)} className="mb-6 flex items-center gap-2 text-slate-500 hover:text-blue-600 font-bold transition-colors">
+            <button onClick={() => handleBack(STEPS.USER_TYPE)} className="mb-6 flex items-center gap-2 text-slate-500 hover:text-[#a88157] font-bold transition-colors">
               <ChevronLeft size={20} /> Geri Dön
             </button>
             <h2 className="text-3xl font-black text-slate-900 mb-10 text-center">Tedavi Alanını Seçin</h2>
@@ -239,10 +241,10 @@ export default function QuoteRequestPage() {
                   key={s.id}
                   onClick={() => { setFormData(prev => ({ ...prev, serviceId: s.id })); handleNext(STEPS.DOCTOR_TIME); }}
                   className={`p-6 rounded-2xl border-2 transition-all text-left flex items-center gap-4 ${
-                    formData.serviceId === s.id ? "border-blue-600 bg-blue-50 ring-4 ring-blue-100" : "border-slate-100 bg-white hover:border-blue-300"
+                    formData.serviceId === s.id ? "border-[#a88157] bg-amber-50 ring-4 ring-amber-100" : "border-slate-100 bg-white hover:border-[#a88157]"
                   }`}
                 >
-                  <div className={`h-12 w-12 rounded-xl flex items-center justify-center ${formData.serviceId === s.id ? "bg-blue-600 text-white" : "bg-slate-100 text-slate-600"}`}>
+                  <div className={`h-12 w-12 rounded-xl flex items-center justify-center ${formData.serviceId === s.id ? "bg-[#a88157] text-white" : "bg-slate-100 text-slate-600"}`}>
                     <s.icon size={24} />
                   </div>
                   <div className="flex-1">
@@ -264,7 +266,7 @@ export default function QuoteRequestPage() {
             exit={{ opacity: 0, x: -20 }}
             className="max-w-5xl w-full"
           >
-            <button onClick={() => handleBack(STEPS.SERVICE)} className="mb-6 flex items-center gap-2 text-slate-500 hover:text-blue-600 font-bold transition-colors">
+            <button onClick={() => handleBack(STEPS.SERVICE)} className="mb-6 flex items-center gap-2 text-slate-500 hover:text-[#a88157] font-bold transition-colors">
               <ChevronLeft size={20} /> Geri Dön
             </button>
             <h2 className="text-3xl font-black text-slate-900 mb-10 text-center">Doktor ve Tarih Seçin</h2>
@@ -277,7 +279,7 @@ export default function QuoteRequestPage() {
                     key={i}
                     onClick={() => setFormData(prev => ({ ...prev, doctorId: `doc-${i}` }))}
                     className={`w-full p-4 rounded-2xl border-2 text-left transition-all ${
-                      formData.doctorId === `doc-${i}` ? "border-blue-600 bg-blue-50" : "border-slate-100 bg-white hover:border-blue-200"
+                      formData.doctorId === `doc-${i}` ? "border-[#a88157] bg-amber-50" : "border-slate-100 bg-white hover:border-[#a88157]"
                     }`}
                   >
                     <div className="flex items-center gap-3">
@@ -297,7 +299,7 @@ export default function QuoteRequestPage() {
                       min={getTodayLocalISO()}
                       value={formData.date}
                       onChange={(e) => setFormData(prev => ({ ...prev, date: e.target.value, time: "" }))}
-                      className="w-full pl-10 pr-4 py-3 rounded-xl border border-slate-200 outline-none focus:border-blue-600"
+                      className="w-full pl-10 pr-4 py-3 rounded-xl border border-slate-200 outline-none focus:border-[#a88157]"
                     />
                   </div>
                   {formData.date && <p className="text-sm text-slate-500">Seçilen Tarih: <span className="font-bold text-slate-900">{formData.date}</span></p>}
@@ -309,7 +311,7 @@ export default function QuoteRequestPage() {
                       key={slot}
                       onClick={() => setFormData(prev => ({ ...prev, time: slot }))}
                       className={`py-3 rounded-xl text-sm font-bold transition-all ${
-                        formData.time === slot ? "bg-blue-600 text-white shadow-lg" : "bg-white border border-slate-200 text-slate-600 hover:border-blue-600"
+                        formData.time === slot ? "bg-[#a88157] text-white shadow-lg" : "bg-white border border-slate-200 text-slate-600 hover:border-[#a88157]"
                       }`}
                     >
                       {slot}
@@ -320,7 +322,7 @@ export default function QuoteRequestPage() {
                 <button
                   disabled={!formData.doctorId || !formData.date || !formData.time || loading}
                   onClick={() => handleNext(STEPS.USER_INFO)}
-                  className="w-full py-4 rounded-2xl bg-blue-600 text-white font-bold shadow-xl hover:bg-blue-700 transition-all disabled:opacity-50 flex items-center justify-center gap-2"
+                  className="w-full py-4 rounded-2xl bg-[#a88157] text-white font-bold shadow-xl hover:bg-[#8b6945] transition-all disabled:opacity-50 flex items-center justify-center gap-2"
                 >
                   {loading ? "Yükleniyor..." : "Devam Et"} <ChevronRight size={20} />
                 </button>
@@ -338,7 +340,7 @@ export default function QuoteRequestPage() {
             exit={{ opacity: 0, x: -20 }}
             className="max-w-xl w-full"
           >
-            <button onClick={() => handleBack(STEPS.DOCTOR_TIME)} className="mb-6 flex items-center gap-2 text-slate-500 hover:text-blue-600 font-bold transition-colors">
+            <button onClick={() => handleBack(STEPS.DOCTOR_TIME)} className="mb-6 flex items-center gap-2 text-slate-500 hover:text-[#a88157] font-bold transition-colors">
               <ChevronLeft size={20} /> Geri Dön
             </button>
             <h2 className="text-3xl font-black text-slate-900 mb-10 text-center">İletişim Bilgileriniz</h2>
@@ -348,7 +350,7 @@ export default function QuoteRequestPage() {
                 <input
                   value={formData.name}
                   onChange={(e) => setFormData(prev => ({ ...prev, name: e.target.value }))}
-                  className="w-full p-3 rounded-xl border border-slate-200 outline-none focus:border-blue-600"
+                  className="w-full p-3 rounded-xl border border-slate-200 outline-none focus:border-[#a88157]"
                   placeholder="Adınız Soyadınız"
                 />
               </div>
@@ -358,7 +360,7 @@ export default function QuoteRequestPage() {
                   type="email"
                   value={formData.email}
                   onChange={(e) => setFormData(prev => ({ ...prev, email: e.target.value }))}
-                  className="w-full p-3 rounded-xl border border-slate-200 outline-none focus:border-blue-600"
+                  className="w-full p-3 rounded-xl border border-slate-200 outline-none focus:border-[#a88157]"
                   placeholder="ornek@email.com"
                 />
               </div>
@@ -368,14 +370,23 @@ export default function QuoteRequestPage() {
                   type="tel"
                   value={formData.phone}
                   onChange={(e) => setFormData(prev => ({ ...prev, phone: e.target.value }))}
-                  className="w-full p-3 rounded-xl border border-slate-200 outline-none focus:border-blue-600"
+                  className="w-full p-3 rounded-xl border border-slate-200 outline-none focus:border-[#a88157]"
                   placeholder="05XX XXX XX XX"
+                />
+              </div>
+              <div className="space-y-2">
+                <label className="text-sm font-bold text-slate-700">Şikayetiniz / Notunuz (İsteğe Bağlı)</label>
+                <textarea
+                  value={formData.notes}
+                  onChange={(e) => setFormData(prev => ({ ...prev, notes: e.target.value }))}
+                  className="w-full p-3 rounded-xl border border-slate-200 outline-none focus:border-[#a88157] resize-none h-24"
+                  placeholder="Kısaca şikayetinizi veya eklemek istediklerinizi belirtebilirsiniz..."
                 />
               </div>
               <button
                 disabled={!formData.name || !formData.email || !formData.phone || loading}
                 onClick={handleVerification}
-                className="w-full py-4 rounded-2xl bg-blue-600 text-white font-bold shadow-xl hover:bg-blue-700 transition-all disabled:opacity-50 flex items-center justify-center gap-2"
+                className="w-full py-4 rounded-2xl bg-[#a88157] text-white font-bold shadow-xl hover:bg-[#8b6945] transition-all disabled:opacity-50 flex items-center justify-center gap-2 mt-4"
               >
                 {loading ? "İşleniyor..." : "Randevuyu Doğrula"} <ChevronRight size={20} />
               </button>
@@ -392,7 +403,7 @@ export default function QuoteRequestPage() {
             exit={{ opacity: 0, scale: 1.1 }}
             className="max-w-md w-full text-center"
           >
-            <div className="h-20 w-20 rounded-full bg-blue-100 text-blue-600 flex items-center justify-center mx-auto mb-6">
+            <div className="h-20 w-20 rounded-full bg-amber-100 text-[#a88157] flex items-center justify-center mx-auto mb-6">
               <ShieldCheck size={40} />
             </div>
             <h2 className="text-3xl font-black text-slate-900 mb-4">Doğrulama Kodu</h2>
@@ -402,7 +413,7 @@ export default function QuoteRequestPage() {
                 <input
                   key={i}
                   maxLength={1}
-                  className="w-12 h-14 text-center text-2xl font-bold rounded-xl border-2 border-slate-200 focus:border-blue-600 outline-none"
+                  className="w-12 h-14 text-center text-2xl font-bold rounded-xl border-2 border-slate-200 focus:border-[#a88157] outline-none"
                   onChange={(e) => {
                     const val = e.target.value;
                     setFormData(prev => ({ ...prev, verificationCode: (prev.verificationCode || "") + val }));
@@ -414,7 +425,7 @@ export default function QuoteRequestPage() {
             <button
               disabled={formData.verificationCode?.length !== 6 || loading}
               onClick={confirmAppointment}
-              className="w-full py-4 rounded-2xl bg-blue-600 text-white font-bold shadow-xl hover:bg-blue-700 transition-all disabled:opacity-50"
+              className="w-full py-4 rounded-2xl bg-[#a88157] text-white font-bold shadow-xl hover:bg-[#8b6945] transition-all disabled:opacity-50"
             >
               {loading ? "Onaylanıyor..." : "Randevuyu Tamamla"}
             </button>
@@ -436,7 +447,7 @@ export default function QuoteRequestPage() {
             <p className="text-slate-500 mb-10">Klinik ekibimiz sizinle iletişime geçecektir. Sizi görmek için sabırsızlanıyoruz.</p>
             <button
               onClick={() => navigate("/")}
-              className="w-full py-4 rounded-2xl bg-blue-600 text-white font-bold shadow-xl hover:bg-blue-700 transition-all"
+              className="w-full py-4 rounded-2xl bg-[#a88157] text-white font-bold shadow-xl hover:bg-[#8b6945] transition-all"
             >
               Ana Sayfaya Dön
             </button>

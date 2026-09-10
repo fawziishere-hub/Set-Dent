@@ -137,28 +137,36 @@ export default function QuoteRequestPage() {
   };
 
   const confirmAppointment = async () => {
-    setLoading(true);
-    try {
-      const { data: appt } = await supabase
-        .from("appointments")
-        .select("*")
-        .eq("patient_email", formData.email)
-        .eq("status", "pending")
-        .single();
+  setLoading(true);
+  try {
+    // Drop .single() and instead sort by newest, grabbing the top 1
+    const { data, error: fetchError } = await supabase
+      .from("appointments")
+      .select("*")
+      .eq("patient_email", formData.email)
+      .eq("status", "pending")
+      .order("created_at", { ascending: false })
+      .limit(1);
 
-      if (!appt || appt.verification_code !== formData.verificationCode) {
-        throw new Error("Geçersiz doğrulama kodu.");
-      }
+    if (fetchError) throw fetchError;
 
-      await supabase.from("appointments").update({ status: "confirmed" }).eq("id", appt.id);
-      toast.success("Randevunuz başarıyla onaylandı!");
-      setStep(STEPS.CONFIRMATION);
-    } catch (error) {
-      toast.error(error.message);
-    } finally {
-      setLoading(false);
+    const appt = data?.[0]; // Safely extract the first item
+
+    if (!appt || appt.verification_code !== formData.verificationCode) {
+      throw new Error("Geçersiz doğrulama kodu.");
     }
-  };
+
+    // Update the status to confirmed
+    await supabase.from("appointments").update({ status: "confirmed" }).eq("id", appt.id);
+    
+    toast.success("Randevunuz başarıyla onaylandı!");
+    setStep(STEPS.CONFIRMATION);
+  } catch (error) {
+    toast.error(error.message);
+  } finally {
+    setLoading(false);
+  }
+};
 
   return (
     <main className="min-h-screen bg-white pt-20 flex items-center justify-center px-5 mb-10">

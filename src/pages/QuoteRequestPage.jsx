@@ -107,9 +107,10 @@ export default function QuoteRequestPage() {
   const handleVerification = async () => {
     setLoading(true);
     try {
+      
       // 1. Generate code
       const code = Math.floor(100000 + Math.random() * 900000).toString();
-
+const expireTime = new Date(Date.now() + 10 * 60000).toISOString();
       // 2. Store in DB
       const { error } = await supabase.from("appointments").insert([{
         patient_name: formData.name,
@@ -120,6 +121,7 @@ export default function QuoteRequestPage() {
         doctor_id: formData.doctorId,
         service_id: formData.serviceId,
         verification_code: code,
+        code_expires_at: expireTime,
         status: "pending",
         appointment_type: formData.userType,
         notes: formData.notes, // Sending notes to DB
@@ -130,43 +132,51 @@ export default function QuoteRequestPage() {
       toast.info(`Doğrulama kodu e-postanıza gönderildi: ${code} (Simülasyon)`);
       setStep(STEPS.VERIFICATION);
     } catch (error) {
-      toast.error("Hata oluştu: " + error.message);
+      if (error.message.includes("duplicate key value")) {
+        toast.error("Zaten bekleyen bir randevu talebiniz var. Lütfen e-postanızı kontrol edin.");
+      } else {
+        toast.error("Hata oluştu: " + error.message);
+      }
     } finally {
       setLoading(false);
     }
   };
 
   const confirmAppointment = async () => {
-  setLoading(true);
-  try {
-    // Drop .single() and instead sort by newest, grabbing the top 1
-    const { data, error: fetchError } = await supabase
-      .from("appointments")
-      .select("*")
-      .eq("patient_email", formData.email)
-      .eq("status", "pending")
-      .order("created_at", { ascending: false })
-      .limit(1);
+    setLoading(true);
+    try {
+      // Drop .single() and instead sort by newest, grabbing the top 1
+      const { data, error: fetchError } = await supabase
+        .from("appointments")
+        .select("*")
+        .eq("patient_email", formData.email)
+        .eq("status", "pending")
+        .order("created_at", { ascending: false })
+        .limit(1);
 
-    if (fetchError) throw fetchError;
+      if (fetchError) throw fetchError;
 
-    const appt = data?.[0]; // Safely extract the first item
+      const appt = data?.[0]; // Safely extract the first item
 
-    if (!appt || appt.verification_code !== formData.verificationCode) {
-      throw new Error("Geçersiz doğrulama kodu.");
+      if (!appt || appt.verification_code !== formData.verificationCode) {
+        throw new Error("Geçersiz doğrulama kodu.");
+      }
+
+      if (new Date() > new Date(appt.code_expires_at)) {
+        throw new Error("Doğrulama kodunun süresi doldu. Lütfen yeni bir randevu alın.");
+      }
+
+      // Update the status to confirmed
+      await supabase.from("appointments").update({ status: "confirmed" }).eq("id", appt.id);
+
+      toast.success("Randevunuz başarıyla onaylandı!");
+      setStep(STEPS.CONFIRMATION);
+    } catch (error) {
+      toast.error(error.message);
+    } finally {
+      setLoading(false);
     }
-
-    // Update the status to confirmed
-    await supabase.from("appointments").update({ status: "confirmed" }).eq("id", appt.id);
-    
-    toast.success("Randevunuz başarıyla onaylandı!");
-    setStep(STEPS.CONFIRMATION);
-  } catch (error) {
-    toast.error(error.message);
-  } finally {
-    setLoading(false);
-  }
-};
+  };
 
   return (
     <main className="min-h-screen bg-white pt-20 flex items-center justify-center px-5 mb-10">

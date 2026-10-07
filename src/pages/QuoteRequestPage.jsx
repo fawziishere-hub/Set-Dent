@@ -110,7 +110,6 @@ export default function QuoteRequestPage() {
       
       // 1. Generate code
       const code = Math.floor(100000 + Math.random() * 900000).toString();
-const expireTime = new Date(Date.now() + 10 * 60000).toISOString();
       // 2. Store in DB
       const { error } = await supabase.from("appointments").insert([{
         patient_name: formData.name,
@@ -121,7 +120,6 @@ const expireTime = new Date(Date.now() + 10 * 60000).toISOString();
         doctor_id: formData.doctorId,
         service_id: formData.serviceId,
         verification_code: code,
-        code_expires_at: expireTime,
         status: "pending",
         appointment_type: formData.userType,
         notes: formData.notes, // Sending notes to DB
@@ -160,10 +158,6 @@ const expireTime = new Date(Date.now() + 10 * 60000).toISOString();
 
       if (!appt || appt.verification_code !== formData.verificationCode) {
         throw new Error("Geçersiz doğrulama kodu.");
-      }
-
-      if (new Date() > new Date(appt.code_expires_at)) {
-        throw new Error("Doğrulama kodunun süresi doldu. Lütfen yeni bir randevu alın.");
       }
 
       // Update the status to confirmed

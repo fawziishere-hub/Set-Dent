@@ -88,13 +88,11 @@ function AppContent() {
           />
 
           {/* Admin Protected Route */}
-          <Route 
-            path="/admin" 
+          <Route
+            path="/admin"
             element={
-              <ProtectedRoute requireAdmin={true}>
-                <AdminDashboard />
-              </ProtectedRoute>
-            } 
+              <AdminDashboard />
+            }
           />
         </Routes>
       </main>
